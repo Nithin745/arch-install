@@ -1,0 +1,229 @@
+# Custom Packages Configuration
+# Add your personal packages here (one per line)
+# 
+# Syntax:
+#   - Official packages: just write the package name
+#   - AUR packages: prefix with "AUR: "
+#   - Comments: lines starting with # are ignored
+#   - Empty lines are ignored
+#
+# Example:
+#   neovim
+#   AUR: visual-studio-code-bin
+#
+# This file is designed to be easily updated as you discover new packages
+# Run post-install.sh after modifying this file to install new packages
+
+# ============================================
+# TEXT EDITORS & IDEs
+# ============================================
+neovim
+# AUR: visual-studio-code-bin
+# AUR: sublime-text-4
+# emacs
+# kate
+# gedit
+
+# ============================================
+# TERMINAL EMULATORS
+# ============================================
+alacritty
+# kitty
+# terminator
+# tilix
+
+# ============================================
+# SHELLS & SHELL TOOLS
+# ============================================
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+# fish
+# starship
+# AUR: oh-my-zsh-git
+
+# ============================================
+# VERSION CONTROL
+# ============================================
+git
+# git-lfs
+# lazygit
+# tig
+
+# ============================================
+# FILE MANAGERS
+# ============================================
+ranger
+# thunar
+# nemo
+# dolphin
+# nautilus
+
+# ============================================
+# WEB BROWSERS
+# ============================================
+firefox
+# chromium
+# AUR: brave-bin
+# AUR: google-chrome
+# AUR: microsoft-edge-stable-bin
+
+# ============================================
+# COMMUNICATION
+# ============================================
+# discord
+# telegram-desktop
+# slack-desktop
+# AUR: zoom
+# AUR: teams-for-linux
+
+# ============================================
+# MULTIMEDIA
+# ============================================
+# vlc
+# mpv
+# spotify-launcher
+# AUR: spotify
+# gimp
+# inkscape
+# blender
+# obs-studio
+# kdenlive
+
+# ============================================
+# DOCUMENT VIEWERS & EDITORS
+# ============================================
+# libreoffice-fresh
+# evince
+# okular
+# zathura
+# zathura-pdf-mupdf
+# calibre
+
+# ============================================
+# SYSTEM MONITORING
+# ============================================
+htop
+btop
+# nvtop
+# iotop
+# nmon
+
+# ============================================
+# NETWORKING TOOLS
+# ============================================
+# wireshark-qt
+# nmap
+# traceroute
+# netcat
+# curl
+# wget
+# aria2
+
+# ============================================
+# DEVELOPMENT TOOLS
+# ============================================
+# docker-compose
+# kubectl
+# terraform
+# ansible
+# vagrant
+# postman-bin
+
+# ============================================
+# PROGRAMMING LANGUAGES & RUNTIMES
+# ============================================
+# python
+# python-pip
+# nodejs
+# npm
+# yarn
+# rust
+# go
+# ruby
+# jdk-openjdk
+# dotnet-sdk
+
+# ============================================
+# DATABASE TOOLS
+# ============================================
+# postgresql
+# mysql
+# redis
+# mongodb-bin
+# dbeaver
+
+# ============================================
+# CLOUD & DevOps
+# ============================================
+# aws-cli
+# AUR: google-cloud-sdk
+# AUR: azure-cli
+# terraform
+# packer
+
+# ============================================
+# PRODUCTIVITY
+# ============================================
+# thunderbird
+# notion-app-enhanced
+# obsidian
+# AUR: todoist-electron
+# AUR: standardnotes-desktop
+
+# ============================================
+# GAMING
+# ============================================
+# steam
+# lutris
+# wine
+# AUR: heroic-games-launcher-bin
+# gamemode
+# mangohud
+
+# ============================================
+# FONTS
+# ============================================
+ttf-dejavu
+ttf-liberation
+noto-fonts
+noto-fonts-emoji
+# ttf-jetbrains-mono
+# ttf-fira-code
+# AUR: ttf-ms-fonts
+# AUR: nerd-fonts-complete
+
+# ============================================
+# SECURITY & PRIVACY
+# ============================================
+# keepassxc
+# bitwarden
+# veracrypt
+# tor-browser
+# AUR: protonvpn
+
+# ============================================
+# UTILITIES
+# ============================================
+# timeshift
+# gparted
+# bleachbit
+# flameshot
+# scrot
+# AUR: ventoy-bin
+# AUR: balena-etcher
+
+# ============================================
+# THEMES & CUSTOMIZATION
+# ============================================
+# lxappearance
+# qt5ct
+# kvantum
+# papirus-icon-theme
+# arc-gtk-theme
+# materia-gtk-theme
+
+# ============================================
+# YOUR CUSTOM PACKAGES BELOW
+# ============================================
+# Add your own packages here

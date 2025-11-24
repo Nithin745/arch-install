@@ -1,0 +1,85 @@
+# Arch Linux Installation Configuration File
+# Copy this file to install.conf and customize the values below
+# This allows for unattended installation
+#
+# Usage:
+#   cp install.conf.example install.conf
+#   # Edit install.conf with your settings
+#   sudo ./install.sh
+
+# ============================================
+# SYSTEM CONFIGURATION
+# ============================================
+
+# Hostname for your system
+HOSTNAME="archlinux"
+
+# Username for the primary user account
+USERNAME="user"
+
+# User password (in plain text - handle with care!)
+# Consider using a strong password
+USER_PASSWORD="changeme"
+
+# Root password (in plain text - handle with care!)
+ROOT_PASSWORD="changeme"
+
+# ============================================
+# LOCALIZATION
+# ============================================
+
+# Timezone (see /usr/share/zoneinfo/ for available timezones)
+# Examples: America/New_York, Europe/London, Asia/Tokyo, America/Los_Angeles
+TIMEZONE="America/New_York"
+
+# Locale (common: en_US.UTF-8, en_GB.UTF-8, de_DE.UTF-8, fr_FR.UTF-8)
+LOCALE="en_US.UTF-8"
+
+# Keymap (common: us, uk, de, fr, es)
+KEYMAP="us"
+
+# ============================================
+# DISK CONFIGURATION
+# ============================================
+
+# Target disk for installation (e.g., sda, nvme0n1, vda)
+# WARNING: This disk will be completely erased!
+# Use 'lsblk' to list available disks
+TARGET_DISK="sda"
+
+# Filesystem type
+# Options:
+#   btrfs - Modern filesystem with snapshots, compression, and subvolumes (recommended)
+#   ext4  - Traditional, stable, and well-tested filesystem
+FILESYSTEM="btrfs"
+
+# ============================================
+# NOTES AND WARNINGS
+# ============================================
+# 
+# 1. SECURITY WARNING:
+#    This file contains passwords in plain text. Protect it appropriately:
+#    - Set proper permissions: chmod 600 install.conf
+#    - Delete or secure this file after installation
+#    - Never commit this file to version control
+#
+# 2. The script will automatically detect:
+#    - UEFI or BIOS boot mode
+#    - CPU vendor (Intel/AMD) for microcode
+#    - GPU (NVIDIA/AMD/Intel) for drivers
+#    - Wireless and Bluetooth hardware
+#
+# 3. For BTRFS filesystem:
+#    - Subvolumes will be created: @, @home, @var, @log, @snapshots
+#    - Optimal mount options will be applied (compression, noatime, etc.)
+#    - Timeshift will be installed for system snapshots
+#
+# 4. Disk naming:
+#    - SATA/SCSI disks: sda, sdb, sdc, etc.
+#    - NVMe disks: nvme0n1, nvme1n1, etc.
+#    - Virtual disks: vda, vdb, etc.
+#    - Use only the disk name without partition numbers
+#
+# 5. To confirm your disk before installation:
+#    Run: lsblk -d -n -o NAME,SIZE,TYPE | grep disk
+#
