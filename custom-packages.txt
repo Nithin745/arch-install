@@ -1,6 +1,6 @@
 # Custom Packages Configuration
 # Add your personal packages here (one per line)
-# 
+#
 # Syntax:
 #   - Official packages: just write the package name
 #   - AUR packages: prefix with "AUR: "
@@ -27,7 +27,8 @@ neovim
 # ============================================
 # TERMINAL EMULATORS
 # ============================================
-alacritty
+ghostty
+# alacritty
 # kitty
 # terminator
 # tilix
@@ -35,9 +36,9 @@ alacritty
 # ============================================
 # SHELLS & SHELL TOOLS
 # ============================================
-zsh
-zsh-autosuggestions
-zsh-syntax-highlighting
+# zsh
+# zsh-autosuggestions
+# zsh-syntax-highlighting
 # fish
 # starship
 # AUR: oh-my-zsh-git
@@ -47,7 +48,7 @@ zsh-syntax-highlighting
 # ============================================
 git
 # git-lfs
-# lazygit
+lazygit
 # tig
 
 # ============================================
@@ -63,7 +64,7 @@ ranger
 # WEB BROWSERS
 # ============================================
 firefox
-# chromium
+chromium
 # AUR: brave-bin
 # AUR: google-chrome
 # AUR: microsoft-edge-stable-bin
@@ -75,12 +76,12 @@ firefox
 # telegram-desktop
 # slack-desktop
 # AUR: zoom
-# AUR: teams-for-linux
+AUR: teams-for-linux
 
 # ============================================
 # MULTIMEDIA
 # ============================================
-# vlc
+vlc
 # mpv
 # spotify-launcher
 # AUR: spotify
@@ -96,8 +97,8 @@ firefox
 # libreoffice-fresh
 # evince
 # okular
-# zathura
-# zathura-pdf-mupdf
+zathura
+zathura-pdf-mupdf
 # calibre
 
 # ============================================

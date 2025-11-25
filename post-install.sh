@@ -136,7 +136,7 @@ if [[ -f "$CUSTOM_PACKAGES_FILE" ]]; then
     # Install AUR packages
     if [[ ${#AUR_PKGS[@]} -gt 0 ]]; then
         log_info "Installing AUR packages: ${AUR_PKGS[*]}"
-        yay -S --needed --noconfirm "${AUR_PKGS[@]}" || log_warn "Some AUR packages failed to install"
+        paru -S --needed --noconfirm "${AUR_PKGS[@]}" || log_warn "Some AUR packages failed to install"
     fi
 else
     log_warn "custom-packages.txt not found, skipping custom package installation"

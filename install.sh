@@ -308,7 +308,7 @@ BASE_PACKAGES="base base-devel linux linux-headers linux-firmware"
 
 # Filesystem tools
 if [[ "$FILESYSTEM" == "btrfs" ]]; then
-    FILESYSTEM_PACKAGES="btrfs-progs snapper snap-pac"
+    FILESYSTEM_PACKAGES="btrfs-progs timeshift"
 else
     FILESYSTEM_PACKAGES="e2fsprogs"
 fi
@@ -325,10 +325,9 @@ else
     CPU_PACKAGES=""
 fi
 
-# Wireless firmware (only if wireless hardware detected)
-FIRMWARE_PACKAGES=""
+# Firmware packages
+FIRMWARE_PACKAGES="linux-firmware sof-firmware alsa-firmware"
 if [[ "$HAS_WIRELESS" == "yes" ]]; then
-    FIRMWARE_PACKAGES="linux-firmware"
     log_info "Including wireless firmware"
 fi
 
