@@ -46,7 +46,6 @@ ghostty
 # ============================================
 # VERSION CONTROL
 # ============================================
-git
 # git-lfs
 lazygit
 # tig
@@ -117,8 +116,6 @@ zathura-pdf-mupdf
 # nmap
 # traceroute
 # netcat
-curl
-wget
 # aria2
 
 # ============================================
