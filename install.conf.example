@@ -12,10 +12,10 @@
 # ============================================
 
 # Hostname for your system
-HOSTNAME="archlinux"
+HOSTNAME="ahsrav"
 
 # Username for the primary user account
-USERNAME="user"
+USERNAME="nithin"
 
 # User password (in plain text - handle with care!)
 # Consider using a strong password
@@ -30,7 +30,7 @@ ROOT_PASSWORD="changeme"
 
 # Timezone (see /usr/share/zoneinfo/ for available timezones)
 # Examples: America/New_York, Europe/London, Asia/Tokyo, America/Los_Angeles
-TIMEZONE="America/New_York"
+TIMEZONE="Asia/Kolkata"
 
 # Locale (common: en_US.UTF-8, en_GB.UTF-8, de_DE.UTF-8, fr_FR.UTF-8)
 LOCALE="en_US.UTF-8"
@@ -56,7 +56,7 @@ FILESYSTEM="btrfs"
 # ============================================
 # NOTES AND WARNINGS
 # ============================================
-# 
+#
 # 1. SECURITY WARNING:
 #    This file contains passwords in plain text. Protect it appropriately:
 #    - Set proper permissions: chmod 600 install.conf

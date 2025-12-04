@@ -230,11 +230,12 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
         mount -o ${BTRFS_OPTS},subvol=@ "${ROOT_PART}" /mnt
 
         # Create mount points
-        mkdir -p /mnt/{home,var,var/log,.snapshots,boot}
+        mkdir -p /mnt/{home,.snapshots,boot}
 
         # Mount subvolumes
         mount -o ${BTRFS_OPTS},subvol=@home "${ROOT_PART}" /mnt/home
         mount -o ${BTRFS_OPTS},subvol=@var "${ROOT_PART}" /mnt/var
+        mkdir -p /mnt/var/log
         mount -o ${BTRFS_OPTS},subvol=@log "${ROOT_PART}" /mnt/var/log
         mount -o ${BTRFS_OPTS},subvol=@snapshots "${ROOT_PART}" /mnt/.snapshots
 
@@ -501,7 +502,7 @@ if [[ "$FILESYSTEM" == "btrfs" ]]; then
     # Create timeshift directory structure
     mkdir -p /run/timeshift/backup
     chmod 755 /run/timeshift
-    
+
     log_info "Timeshift installed. Configure it after first boot using 'sudo timeshift-gtk' or 'sudo timeshift --create'"
 fi
 
