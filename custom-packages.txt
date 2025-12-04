@@ -64,7 +64,7 @@ ranger
 # WEB BROWSERS
 # ============================================
 firefox
-chromium
+# chromium
 # AUR: brave-bin
 # AUR: google-chrome
 # AUR: microsoft-edge-stable-bin
@@ -76,7 +76,7 @@ chromium
 # telegram-desktop
 # slack-desktop
 # AUR: zoom
-AUR: teams-for-linux
+# AUR: teams-for-linux
 
 # ============================================
 # MULTIMEDIA
@@ -104,8 +104,8 @@ zathura-pdf-mupdf
 # ============================================
 # SYSTEM MONITORING
 # ============================================
-htop
-btop
+# htop
+# btop
 # nvtop
 # iotop
 # nmon
@@ -117,8 +117,8 @@ btop
 # nmap
 # traceroute
 # netcat
-# curl
-# wget
+curl
+wget
 # aria2
 
 # ============================================
@@ -185,10 +185,10 @@ btop
 # ============================================
 # FONTS
 # ============================================
-ttf-dejavu
-ttf-liberation
-noto-fonts
-noto-fonts-emoji
+ttf-dejavu-nerd
+ttf-ubuntu-nerd
+ttf-iosevka-nerd
+# noto-fonts-emoji
 # ttf-jetbrains-mono
 # ttf-fira-code
 # AUR: ttf-ms-fonts
