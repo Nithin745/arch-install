@@ -215,12 +215,10 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
         # Mount and create subvolumes
         mount "${ROOT_PART}" /mnt
 
-        log_info "Creating btrfs subvolumes..."
+        log_info "Creating btrfs subvolumes for Timeshift compatibility..."
         btrfs subvolume create /mnt/@
         btrfs subvolume create /mnt/@home
-        btrfs subvolume create /mnt/@var
-        btrfs subvolume create /mnt/@snapshots
-        btrfs subvolume create /mnt/@log
+        btrfs subvolume create /mnt/@var_log
 
         # Unmount to remount with subvolumes
         umount /mnt
@@ -230,14 +228,12 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
         mount -o ${BTRFS_OPTS},subvol=@ "${ROOT_PART}" /mnt
 
         # Create mount points
-        mkdir -p /mnt/{home,.snapshots,boot}
+        mkdir -p /mnt/{home,var/log,boot}
 
         # Mount subvolumes
         mount -o ${BTRFS_OPTS},subvol=@home "${ROOT_PART}" /mnt/home
-        mount -o ${BTRFS_OPTS},subvol=@var "${ROOT_PART}" /mnt/var
         mkdir -p /mnt/var/log
-        mount -o ${BTRFS_OPTS},subvol=@log "${ROOT_PART}" /mnt/var/log
-        mount -o ${BTRFS_OPTS},subvol=@snapshots "${ROOT_PART}" /mnt/.snapshots
+        mount -o ${BTRFS_OPTS},subvol=@var_log "${ROOT_PART}" /mnt/var/log
 
         log_info "Btrfs subvolumes created and mounted with optimal options"
     else
@@ -269,12 +265,10 @@ else
         # Mount and create subvolumes
         mount "${ROOT_PART}" /mnt
 
-        log_info "Creating btrfs subvolumes..."
+        log_info "Creating btrfs subvolumes for Timeshift compatibility..."
         btrfs subvolume create /mnt/@
         btrfs subvolume create /mnt/@home
-        btrfs subvolume create /mnt/@var
-        btrfs subvolume create /mnt/@snapshots
-        btrfs subvolume create /mnt/@log
+        btrfs subvolume create /mnt/@var_log
 
         # Unmount to remount with subvolumes
         umount /mnt
@@ -284,13 +278,12 @@ else
         mount -o ${BTRFS_OPTS},subvol=@ "${ROOT_PART}" /mnt
 
         # Create mount points
-        mkdir -p /mnt/{home,var,var/log,.snapshots}
+        mkdir -p /mnt/{home,var/log}
 
         # Mount subvolumes
         mount -o ${BTRFS_OPTS},subvol=@home "${ROOT_PART}" /mnt/home
-        mount -o ${BTRFS_OPTS},subvol=@var "${ROOT_PART}" /mnt/var
-        mount -o ${BTRFS_OPTS},subvol=@log "${ROOT_PART}" /mnt/var/log
-        mount -o ${BTRFS_OPTS},subvol=@snapshots "${ROOT_PART}" /mnt/.snapshots
+        mkdir -p /mnt/var/log
+        mount -o ${BTRFS_OPTS},subvol=@var_log "${ROOT_PART}" /mnt/var/log
 
         log_info "Btrfs subvolumes created and mounted with optimal options"
     else

@@ -9,9 +9,11 @@ A comprehensive, modular automation system for installing and configuring Arch L
 - Modular package management
 - Easy-to-maintain configuration files
 - Support for both UEFI and BIOS systems
-- AUR helper installation (yay)
+- **Btrfs with Timeshift snapshot support** (optional)
+- AUR helper installation (paru)
 - Dotfiles management
 - Idempotent scripts (safe to run multiple times)
+- System rollback capability (when using Btrfs)
 
 ## Quick Start
 
@@ -48,7 +50,10 @@ TIMEZONE="America/New_York"
 LOCALE="en_US.UTF-8"
 KEYMAP="us"
 TARGET_DISK="sda"  # or nvme0n1, etc.
+FILESYSTEM="btrfs"  # or "ext4" (default) - btrfs enables Timeshift snapshots
 ```
+
+**Note:** If you choose `btrfs`, the installation will set up a Timeshift-compatible subvolume layout for easy system snapshots and rollbacks.
 
 ### 4. Run Base Installation
 
@@ -147,6 +152,27 @@ You have three options:
 
 To apply changes from `custom-packages.txt`, simply run `post-install.sh` again.
 
+## Filesystem Selection
+
+During installation, you can choose between ext4 (default) and btrfs:
+
+```bash
+# In install.conf (optional)
+FILESYSTEM="btrfs"  # or "ext4" (default)
+```
+
+**When to use Btrfs:**
+- ✅ You want system snapshot/rollback capability with Timeshift
+- ✅ You need compression to save disk space
+- ✅ You want transparent data integrity checking
+- ✅ Modern NVMe SSDs benefit from async discard support
+
+**When to use ext4:**
+- ✅ Maximum stability and maturity
+- ✅ Slightly better performance for some workloads
+- ✅ Simpler, well-understood filesystem
+- ✅ No learning curve required
+
 ## Configuration Management
 
 The `config.sh` script helps you manage your dotfiles:
@@ -223,10 +249,41 @@ The installation includes comprehensive hardware support:
 - VDPAU
 
 ### File Systems
-- ext4, btrfs, xfs, f2fs
+- ext4 (default, stable)
+- **btrfs** (with Timeshift snapshot support)
+- xfs, f2fs
 - NTFS (ntfs-3g)
 - exFAT
 - FAT32
+
+### Btrfs with Timeshift
+
+When using Btrfs as the root filesystem, the installation automatically creates a Timeshift-compatible subvolume layout:
+
+**Subvolume Structure:**
+- `@` → mounted at `/` (root filesystem)
+- `@home` → mounted at `/home` (user data)
+- `@var_log` → mounted at `/var/log` (system logs, excluded from snapshots)
+
+This layout allows you to:
+- Create system snapshots with Timeshift
+- Rollback to previous system states
+- Keep logs and user data separate from system snapshots
+- Maintain package database integrity for proper rollbacks
+
+**Using Timeshift After Installation:**
+
+```bash
+# Launch Timeshift GUI (recommended)
+sudo timeshift-gtk
+
+# Or use CLI
+sudo timeshift --list
+sudo timeshift --create --comments "Before system update"
+sudo timeshift --restore --snapshot "YYYY-MM-DD_HH-MM-SS"
+```
+
+Timeshift stores snapshots in `/run/timeshift/backup` and integrates with GRUB for easy recovery.
 
 ## Troubleshooting
 
@@ -280,6 +337,50 @@ bootctl install  # For UEFI
 grub-install /dev/sdX && grub-mkconfig -o /boot/grub/grub.cfg  # For BIOS
 ```
 
+### Btrfs/Timeshift Issues
+
+**Restore from Timeshift Snapshot:**
+
+1. Boot from Arch ISO
+2. Mount the btrfs root partition:
+   ```bash
+   mount -o subvolid=5 /dev/sdXY /mnt
+   ```
+3. List available snapshots:
+   ```bash
+   ls /mnt/timeshift-btrfs/snapshots/
+   ```
+4. Move current root and restore snapshot:
+   ```bash
+   mv /mnt/@ /mnt/@.broken
+   btrfs subvolume snapshot /mnt/timeshift-btrfs/snapshots/YYYY-MM-DD_HH-MM-SS/@ /mnt/@
+   ```
+5. Reboot
+
+**Timeshift Not Finding Btrfs Device:**
+```bash
+# Verify subvolume layout
+mount -o subvolid=5 /dev/sdXY /mnt
+btrfs subvolume list /mnt
+# Should show @ and @home subvolumes
+
+# Check if UUID is correct in fstab
+blkid /dev/sdXY
+cat /etc/fstab
+```
+
+**"Directory Not Empty" When Deleting Snapshots:**
+```bash
+# Mount top-level subvolume
+sudo mount -o subvolid=5 /dev/sdXY /mnt
+
+# List nested subvolumes in snapshot
+sudo btrfs subvolume list /mnt | grep "timeshift-btrfs/snapshots"
+
+# Manually remove nested subvolumes first
+sudo btrfs subvolume delete /mnt/timeshift-btrfs/snapshots/YYYY-MM-DD_HH-MM-SS/@/var/lib/machines
+```
+
 ## Customization
 
 ### Modify Installation Behavior
@@ -321,6 +422,18 @@ Add configuration scripts to `config.sh` or create new scripts in the directory.
 paru -Syu  # Updates both official and AUR packages
 ```
 
+### System Update with Timeshift (Recommended for Btrfs)
+```bash
+# Create snapshot before update
+sudo timeshift --create --comments "Before system update $(date +%Y-%m-%d)"
+
+# Perform system update
+paru -Syu
+
+# If something breaks, restore from snapshot
+sudo timeshift --restore --snapshot "YYYY-MM-DD_HH-MM-SS"
+```
+
 ### Clean Package Cache
 ```bash
 paru -Sc
@@ -329,6 +442,19 @@ paru -Sc
 ### Remove Orphaned Packages
 ```bash
 sudo pacman -Rns $(pacman -Qtdq)
+```
+
+### Manage Timeshift Snapshots (if using Btrfs)
+```bash
+# List snapshots
+sudo timeshift --list
+
+# Delete old snapshots to free space
+sudo timeshift --delete --snapshot "YYYY-MM-DD_HH-MM-SS"
+
+# Check disk usage of snapshots
+sudo btrfs filesystem df /
+sudo btrfs filesystem usage /
 ```
 
 ### Update Mirrors
