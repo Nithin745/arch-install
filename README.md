@@ -51,9 +51,12 @@ LOCALE="en_US.UTF-8"
 KEYMAP="us"
 TARGET_DISK="sda"  # or nvme0n1, etc.
 FILESYSTEM="btrfs"  # or "ext4" (default) - btrfs enables Timeshift snapshots
+KERNEL="stable"     # or "lts" - Long Term Support kernel for more stability
 ```
 
-**Note:** If you choose `btrfs`, the installation will set up a Timeshift-compatible subvolume layout for easy system snapshots and rollbacks.
+**Notes:** 
+- If you choose `btrfs`, the installation will set up a Timeshift-compatible subvolume layout for easy system snapshots and rollbacks.
+- If you choose `lts` kernel, you'll get longer security support and more stability, but with slightly older features.
 
 ### 4. Run Base Installation
 
@@ -152,14 +155,17 @@ You have three options:
 
 To apply changes from `custom-packages.txt`, simply run `post-install.sh` again.
 
-## Filesystem Selection
+## Filesystem and Kernel Selection
 
-During installation, you can choose between ext4 (default) and btrfs:
+During installation, you can customize your filesystem and kernel:
 
 ```bash
 # In install.conf (optional)
 FILESYSTEM="btrfs"  # or "ext4" (default)
+KERNEL="stable"     # or "lts"
 ```
+
+### Filesystem Options
 
 **When to use Btrfs:**
 - ✅ You want system snapshot/rollback capability with Timeshift
@@ -172,6 +178,22 @@ FILESYSTEM="btrfs"  # or "ext4" (default)
 - ✅ Slightly better performance for some workloads
 - ✅ Simpler, well-understood filesystem
 - ✅ No learning curve required
+
+### Kernel Options
+
+**Stable Kernel (`linux`):**
+- ✅ Latest features and improvements
+- ✅ Newest hardware support
+- ✅ Regular updates every few months
+- ✅ Good for desktop/gaming systems
+- ⚠️ Shorter support lifecycle
+
+**LTS Kernel (`linux-lts`):**
+- ✅ Long-term security updates (2+ years)
+- ✅ More stable and predictable
+- ✅ Better for servers and production systems
+- ✅ Less frequent breaking changes
+- ⚠️ Older features, may lack newest hardware support
 
 ## Configuration Management
 

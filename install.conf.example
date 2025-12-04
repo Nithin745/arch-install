@@ -53,6 +53,12 @@ TARGET_DISK="sda"
 #   ext4  - Traditional, stable, and well-tested filesystem
 FILESYSTEM="btrfs"
 
+# Linux kernel version
+# Options:
+#   stable - Latest stable kernel with newest features and hardware support
+#   lts    - Long Term Support kernel, more stable, longer security updates
+KERNEL="stable"
+
 # ============================================
 # NOTES AND WARNINGS
 # ============================================
@@ -70,16 +76,20 @@ FILESYSTEM="btrfs"
 #    - Wireless and Bluetooth hardware
 #
 # 3. For BTRFS filesystem:
-#    - Subvolumes will be created: @, @home, @var, @log, @snapshots
+#    - Subvolumes will be created: @, @home, @var_log
 #    - Optimal mount options will be applied (compression, noatime, etc.)
 #    - Timeshift will be installed for system snapshots
 #
-# 4. Disk naming:
+# 4. Kernel selection:
+#    - stable: Latest kernel (6.x) with newest features and hardware support
+#    - lts: Long Term Support kernel with 2+ years of security updates
+#
+# 5. Disk naming:
 #    - SATA/SCSI disks: sda, sdb, sdc, etc.
 #    - NVMe disks: nvme0n1, nvme1n1, etc.
 #    - Virtual disks: vda, vdb, etc.
 #    - Use only the disk name without partition numbers
 #
-# 5. To confirm your disk before installation:
+# 6. To confirm your disk before installation:
 #    Run: lsblk -d -n -o NAME,SIZE,TYPE | grep disk
 #

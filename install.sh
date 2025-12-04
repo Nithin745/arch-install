@@ -80,6 +80,18 @@ else
         *) FILESYSTEM="btrfs" ;;
     esac
 
+    # Kernel selection
+    echo ""
+    log_info "Linux kernel options:"
+    echo "1. stable (latest stable kernel - newest features and hardware support)"
+    echo "2. lts (Long Term Support - more stable, longer security updates)"
+    read -p "Select kernel (1-2): " KERNEL_CHOICE
+    case $KERNEL_CHOICE in
+        1) KERNEL="stable" ;;
+        2) KERNEL="lts" ;;
+        *) KERNEL="stable" ;;
+    esac
+
     # Disk selection
     echo ""
     log_info "Available disks:"
@@ -102,6 +114,7 @@ LOCALE="${LOCALE:-en_US.UTF-8}"
 KEYMAP="${KEYMAP:-us}"
 TARGET_DISK="${TARGET_DISK:-sda}"
 FILESYSTEM="${FILESYSTEM:-btrfs}"
+KERNEL="${KERNEL:-stable}"
 
 # Verify internet connection
 log_step "Checking internet connectivity..."
@@ -278,7 +291,7 @@ else
         mount -o ${BTRFS_OPTS},subvol=@ "${ROOT_PART}" /mnt
 
         # Create mount points
-        mkdir -p /mnt/{home,var/log}
+        mkdir -p /mnt/{home,var/log,boot}
 
         # Mount subvolumes
         mount -o ${BTRFS_OPTS},subvol=@home "${ROOT_PART}" /mnt/home
@@ -289,6 +302,7 @@ else
     else
         mkfs.ext4 -F "${ROOT_PART}"
         mount "${ROOT_PART}" /mnt
+        mkdir -p /mnt/boot
     fi
 fi
 
@@ -297,8 +311,14 @@ log_info "Disk partitioned and mounted successfully"
 # Build package list based on hardware
 log_step "Building package list based on detected hardware..."
 
-# Base packages
-BASE_PACKAGES="base base-devel linux linux-headers linux-firmware"
+# Base packages - kernel selection
+if [[ "$KERNEL" == "lts" ]]; then
+    log_info "Using Linux LTS kernel"
+    BASE_PACKAGES="base base-devel linux-lts linux-lts-headers linux-firmware"
+else
+    log_info "Using Linux stable kernel"
+    BASE_PACKAGES="base base-devel linux linux-headers linux-firmware"
+fi
 
 # Filesystem tools
 if [[ "$FILESYSTEM" == "btrfs" ]]; then
@@ -351,7 +371,7 @@ if [[ "$HAS_BLUETOOTH" == "yes" ]]; then
 fi
 
 # System utilities
-SYSTEM_PACKAGES="sudo man-db man-pages vim nano htop git wget curl rsync stow"
+SYSTEM_PACKAGES="sudo man-db man-pages git wget curl rsync stow"
 SYSTEM_PACKAGES="$SYSTEM_PACKAGES bash-completion usbutils pciutils lshw"
 SYSTEM_PACKAGES="$SYSTEM_PACKAGES zip unzip tar gzip xz"
 
@@ -450,10 +470,21 @@ EOF
         KERNEL_PARAMS="$KERNEL_PARAMS nvidia-drm.modeset=1"
     fi
 
+    # Build systemd-boot entry with CPU microcode
     cat > /boot/loader/entries/arch.conf << EOF
 title   Arch Linux
 linux   /vmlinuz-linux
-initrd  /$([[ "$CPU_VENDOR" == "intel" ]] && echo "intel-ucode.img" || echo "amd-ucode.img")
+EOF
+
+    # Add CPU microcode if available
+    if [[ "$CPU_VENDOR" == "intel" ]]; then
+        echo "initrd  /intel-ucode.img" >> /boot/loader/entries/arch.conf
+    elif [[ "$CPU_VENDOR" == "amd" ]]; then
+        echo "initrd  /amd-ucode.img" >> /boot/loader/entries/arch.conf
+    fi
+
+    # Add main initramfs and kernel parameters
+    cat >> /boot/loader/entries/arch.conf << EOF
 initrd  /initramfs-linux.img
 options $KERNEL_PARAMS
 EOF
@@ -462,14 +493,22 @@ else
     pacman -S --noconfirm grub
     grub-install --target=i386-pc "/dev/${TARGET_DISK}"
 
-    # Configure GRUB for btrfs if needed
+    # Configure GRUB kernel parameters
+    GRUB_PARAMS=""
+    
+    # Add btrfs subvolume parameter if needed
     if [[ "$FILESYSTEM" == "btrfs" ]]; then
-        sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 rootflags=subvol=@"/' /etc/default/grub
+        GRUB_PARAMS="$GRUB_PARAMS rootflags=subvol=@"
     fi
 
     # Add NVIDIA parameters if needed
     if echo "$GPU_DETECTED" | grep -q "nvidia"; then
-        sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
+        GRUB_PARAMS="$GRUB_PARAMS nvidia-drm.modeset=1"
+    fi
+
+    # Update GRUB_CMDLINE_LINUX_DEFAULT if we have parameters to add
+    if [[ -n "$GRUB_PARAMS" ]]; then
+        sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"\(.*\)\"/GRUB_CMDLINE_LINUX_DEFAULT=\"\1$GRUB_PARAMS\"/" /etc/default/grub
     fi
 
     grub-mkconfig -o /boot/grub/grub.cfg
@@ -491,12 +530,10 @@ fi
 
 # Configure timeshift for btrfs
 if [[ "$FILESYSTEM" == "btrfs" ]]; then
-    # Timeshift configuration will be done on first run via GUI or command
-    # Create timeshift directory structure
-    mkdir -p /run/timeshift/backup
-    chmod 755 /run/timeshift
-
-    log_info "Timeshift installed. Configure it after first boot using 'sudo timeshift-gtk' or 'sudo timeshift --create'"
+    # Timeshift will create its own directories on first run
+    # No need to pre-create /run directories as they're temporary (tmpfs)
+    
+    echo "Timeshift installed. Configure it after first boot using 'sudo timeshift-gtk' or 'sudo timeshift --create'"
 fi
 
 # Configure pacman
