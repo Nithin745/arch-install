@@ -124,6 +124,29 @@ else
     error_exit "No internet connection. Please configure network first."
 fi
 
+# Update mirror list for India
+log_step "Optimizing package mirrors for India..."
+if command -v reflector &> /dev/null; then
+    log_info "Using reflector to update mirrorlist"
+    reflector --country India \
+              --protocol https \
+              --latest 10 \
+              --sort rate \
+              --save /etc/pacman.d/mirrorlist
+    log_info "Mirror list updated successfully"
+else
+    log_warn "Reflector not found, skipping mirror optimization"
+    log_info "Installing reflector for future use..."
+    pacman -Sy --noconfirm reflector
+    log_info "Updating mirror list now..."
+    reflector --country India \
+              --protocol https \
+              --latest 10 \
+              --sort rate \
+              --save /etc/pacman.d/mirrorlist
+    log_info "Mirror list updated successfully"
+fi
+
 # Detect hardware
 log_step "Detecting hardware..."
 
@@ -371,7 +394,7 @@ if [[ "$HAS_BLUETOOTH" == "yes" ]]; then
 fi
 
 # System utilities
-SYSTEM_PACKAGES="sudo man-db man-pages git wget curl rsync stow"
+SYSTEM_PACKAGES="sudo man-db man-pages git wget curl rsync stow reflector"
 SYSTEM_PACKAGES="$SYSTEM_PACKAGES bash-completion usbutils pciutils lshw"
 SYSTEM_PACKAGES="$SYSTEM_PACKAGES zip unzip tar gzip xz"
 
@@ -531,6 +554,19 @@ fi
 if [[ "$FILESYSTEM" == "btrfs" ]] || [[ "$FILESYSTEM" == "ext4" ]]; then
     systemctl enable fstrim.timer
 fi
+
+# Configure reflector for automatic mirror updates
+mkdir -p /etc/xdg/reflector
+cat > /etc/xdg/reflector/reflector.conf << 'EOFREFLECTOR'
+# Reflector configuration for automatic mirror updates
+--save /etc/pacman.d/mirrorlist
+--country India
+--protocol https
+--latest 10
+--sort rate
+EOFREFLECTOR
+
+systemctl enable reflector.timer
 
 # Configure timeshift for btrfs
 if [[ "$FILESYSTEM" == "btrfs" ]]; then
