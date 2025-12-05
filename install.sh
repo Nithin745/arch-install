@@ -255,8 +255,8 @@ if [[ "$BOOT_MODE" == "UEFI" ]]; then
         mkdir -p /mnt/boot
     fi
 
-    # Mount boot partition
-    mount "${BOOT_PART}" /mnt/boot
+    # Mount boot partition with restricted permissions (fmask=0077,dmask=0077 = 600/700)
+    mount -o fmask=0077,dmask=0077 "${BOOT_PART}" /mnt/boot
 else
     # BIOS partitioning
     parted -s "/dev/${TARGET_DISK}" mklabel msdos
@@ -450,6 +450,10 @@ mkinitcpio -P
 if [[ -d /sys/firmware/efi/efivars ]]; then
     # UEFI
     bootctl install
+    
+    # Fix permissions on random seed file (security warning)
+    chmod 600 /boot/loader/random-seed 2>/dev/null || true
+    chmod 600 /boot/loader/.#* 2>/dev/null || true
 
     cat > /boot/loader/loader.conf << EOF
 default arch.conf
