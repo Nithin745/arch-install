@@ -112,29 +112,71 @@ arch-install/
 
 ## Package Management
 
-### packages.conf
+The installation system has **three layers** of package management:
 
-This file contains categorized package lists:
+### Layer 1: install.sh (Base System - Automatic)
 
-- **BASE_PACKAGES**: Essential system packages
-- **FIRMWARE_PACKAGES**: Hardware firmware (Intel, AMD, WiFi, etc.)
-- **DRIVER_PACKAGES**: Graphics, input, filesystem drivers
-- **NETWORK_PACKAGES**: NetworkManager, WiFi, Bluetooth, SSH
-- **SYSTEM_PACKAGES**: System utilities, monitoring tools
-- **DEVELOPMENT_PACKAGES**: Compilers, debuggers, version control
-- **CONTAINER_PACKAGES**: Podman, virtualization tools
-- **DE_PACKAGES**: Desktop environment (commented by default)
-- **OPTIONAL_PACKAGES**: Browsers, media players, etc. (commented by default)
+**Location:** Built into install.sh (lines 314-393)  
+**When:** During initial installation from Arch ISO  
+**What:** Essential system packages based on detected hardware
 
-### custom-packages.txt
+Already installed automatically:
+- Base system (base, base-devel, linux/linux-lts, linux-firmware)
+- CPU microcode (intel-ucode or amd-ucode)
+- GPU drivers (mesa, vulkan, nvidia/amd/intel drivers)
+- Filesystem tools (btrfs-progs, ntfs-3g, exfatprogs, etc.)
+- Network (NetworkManager, wpa_supplicant, iwd, openssh)
+- Audio (pipewire, wireplumber, alsa-utils)
+- Basic utilities (sudo, git, wget, curl, rsync, zip, tar, etc.)
+- Power management (acpi, acpid)
+- Basic development (gcc, make, cmake)
 
-Add your personal packages here (one per line):
+**You don't need to configure this layer** - it's automatic.
 
+---
+
+### Layer 2: packages.conf (System-Wide Categories)
+
+**Location:** `packages.conf`  
+**When:** During post-install.sh (after first boot)  
+**What:** Additional system-wide package categories  
+**Format:** Shell variables (`CATEGORY_PACKAGES="package1 package2"`)  
+**AUR Support:** No (official repos only)
+
+Package categories available:
+- **EDITOR_PACKAGES**: Text editors (nano, vim, neovim)
+- **MONITORING_PACKAGES**: System monitors (htop, btop, fastfetch)
+- **FILEMANAGER_PACKAGES**: File managers (ranger, nnn, mc, fzf)
+- **COMPRESSION_PACKAGES**: Archive tools (p7zip, bzip2, unrar)
+- **SHELL_PACKAGES**: Alternative shells (zsh, zsh-completions)
+- **POWER_PACKAGES**: Power management (tlp, powertop, thermald)
+- **AUDIO_PACKAGES**: Audio control (pavucontrol)
+- **FIREWALL_PACKAGES**: Firewall (firewalld)
+- **DEVELOPMENT_PACKAGES**: Dev tools (clang, ninja, meson, git-lfs)
+- **CONTAINER_PACKAGES**: Containers (podman, buildah, skopeo)
+- **VIRTUALIZATION_PACKAGES**: VMs (qemu, virt-manager, libvirt)
+- **DE_PACKAGES**: Desktop Environment (GNOME, KDE, XFCE, etc.)
+- **OPTIONAL_PACKAGES**: Applications (firefox, vlc, mpv, etc.)
+
+**Usage:** Uncomment package categories you want in `packages.conf`
+
+---
+
+### Layer 3: custom-packages.txt (Personal Packages)
+
+**Location:** `custom-packages.txt`  
+**When:** During post-install.sh (after first boot)  
+**What:** Your personal, unique packages  
+**Format:** Simple list (one package per line)  
+**AUR Support:** Yes (prefix with `AUR:`)  
+**Git:** Ignored (personal file, not version controlled)
+
+Example:
 ```
 # Official repository packages
-neovim
-tmux
-htop
+ghostty
+lazygit
+zathura
 
 # AUR packages (prefix with "AUR:")
 AUR: visual-studio-code-bin
@@ -142,18 +184,43 @@ AUR: spotify
 AUR: brave-bin
 
 # Comments are supported
-# firefox  # This line is ignored
+# chromium  # This line is ignored
 ```
+
+**Usage:** Add your personal packages that aren't in packages.conf
+
+---
+
+### Key Differences
+
+| Aspect | install.sh | packages.conf | custom-packages.txt |
+|--------|-----------|---------------|---------------------|
+| **When** | During installation | Post-install | Post-install |
+| **Purpose** | Base system | System categories | Personal packages |
+| **Format** | Hard-coded | Shell variables | Simple list |
+| **AUR** | No | No | Yes |
+| **Git** | Tracked | Tracked | Ignored |
+| **Maintained by** | System | System template | End user |
+| **Duplicates** | None | None | Check notes in file |
 
 ### Adding New Packages
 
 You have three options:
 
-1. **Edit packages.conf**: For permanent additions to your base system
-2. **Edit custom-packages.txt**: For personal packages (recommended)
-3. **Install manually**: `yay -S package-name`
+1. **Edit packages.conf**: Uncomment system-wide categories you want (affects all installations)
+2. **Edit custom-packages.txt**: Add your personal packages (recommended, git-ignored)
+3. **Install manually**: `paru -S package-name`
 
-To apply changes from `custom-packages.txt`, simply run `post-install.sh` again.
+To apply changes after editing either file, run:
+```bash
+cd ~/arch-install
+./post-install.sh
+```
+
+**Tip:** Check for duplicates before adding packages:
+- Packages in install.sh are already installed (see Layer 1 above)
+- Packages in packages.conf shouldn't be in custom-packages.txt
+- Notes in custom-packages.txt indicate which packages are elsewhere
 
 ## Filesystem and Kernel Selection
 

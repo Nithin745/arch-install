@@ -1,0 +1,24 @@
+# Arch Linux Installation - Git Ignore
+
+# Personal configuration file (contains passwords in plain text)
+install.conf
+
+# User's personal package list (unique to each user)
+custom-packages.txt
+
+# Backup files
+*.backup
+*.bak
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+.*.swp
+.*.swo
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db

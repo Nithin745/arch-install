@@ -328,7 +328,7 @@ else
 fi
 
 # Add other filesystem support
-FILESYSTEM_PACKAGES="$FILESYSTEM_PACKAGES ntfs-3g exfat-utils dosfstools xfsprogs f2fs-tools"
+FILESYSTEM_PACKAGES="$FILESYSTEM_PACKAGES ntfs-3g exfatprogs dosfstools xfsprogs f2fs-tools"
 
 # CPU microcode
 if [[ "$CPU_VENDOR" == "intel" ]]; then
@@ -573,7 +573,7 @@ arch-chroot /mnt /bin/bash -c "source /root/chroot-env.sh && /root/chroot-config
 # Copy installation files to new system
 log_step "Copying installation files to new system..."
 mkdir -p /mnt/home/${USERNAME}/arch-install
-cp -r "${SCRIPT_DIR}"/* /mnt/home/${USERNAME}/arch-install/ 2>/dev/null || true
+cp -r "${SCRIPT_DIR}"/. /mnt/home/${USERNAME}/arch-install/ 2>/dev/null || true
 arch-chroot /mnt chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/arch-install
 
 # Cleanup

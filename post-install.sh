@@ -70,38 +70,50 @@ PACKAGES_FILE="${SCRIPT_DIR}/packages.conf"
 if [[ -f "$PACKAGES_FILE" ]]; then
     log_step "Installing additional packages from packages.conf..."
 
-    # Check for Desktop Environment packages
-    if grep -q '^DE_PACKAGES=' "$PACKAGES_FILE" && ! grep -q '^#DE_PACKAGES=' "$PACKAGES_FILE"; then
-        DE_PACKAGES=$(grep -E "^DE_PACKAGES=" "$PACKAGES_FILE" | cut -d= -f2- | tr -d '"' | xargs)
-        if [[ -n "$DE_PACKAGES" ]]; then
-            log_info "Installing Desktop Environment packages..."
-            sudo pacman -S --needed --noconfirm $DE_PACKAGES || log_warn "Some DE packages failed to install"
-        fi
-    fi
+    # Source the packages.conf file to load all *_PACKAGES variables
+    # This dynamically reads all package category variables
+    source "$PACKAGES_FILE"
 
-    # Check for Optional packages
-    if grep -q '^OPTIONAL_PACKAGES=' "$PACKAGES_FILE" && ! grep -q '^#OPTIONAL_PACKAGES=' "$PACKAGES_FILE"; then
-        OPTIONAL_PACKAGES=$(grep -E "^OPTIONAL_PACKAGES=" "$PACKAGES_FILE" | cut -d= -f2- | tr -d '"' | xargs)
-        if [[ -n "$OPTIONAL_PACKAGES" ]]; then
-            log_info "Installing optional packages..."
-            sudo pacman -S --needed --noconfirm $OPTIONAL_PACKAGES || log_warn "Some optional packages failed to install"
-        fi
-    fi
+    # Define package categories to install (in order)
+    # Format: "VARIABLE_NAME:Display Name"
+    PACKAGE_CATEGORIES=(
+        "EDITOR_PACKAGES:Text Editors"
+        "MONITORING_PACKAGES:System Monitoring"
+        "FILEMANAGER_PACKAGES:File Management Utilities"
+        "COMPRESSION_PACKAGES:Compression Tools"
+        "SHELL_PACKAGES:Shell Environments"
+        "POWER_PACKAGES:Power Management"
+        "AUDIO_PACKAGES:Audio Control"
+        "NETWORK_UTILITIES:Network Utilities"
+        "FIREWALL_PACKAGES:Firewall"
+        "DEVELOPMENT_PACKAGES:Development Tools"
+        "CONTAINER_PACKAGES:Container Tools"
+        "VIRTUALIZATION_PACKAGES:Virtualization"
+        "PRINTING_PACKAGES:Printing Support"
+        "DE_PACKAGES:Desktop Environment"
+        "OPTIONAL_PACKAGES:Optional Applications"
+    )
 
-    # Check for Container packages
-    if grep -q '^CONTAINER_PACKAGES=' "$PACKAGES_FILE" && ! grep -q '^#CONTAINER_PACKAGES=' "$PACKAGES_FILE"; then
-        CONTAINER_PACKAGES=$(grep -E "^CONTAINER_PACKAGES=" "$PACKAGES_FILE" | cut -d= -f2- | tr -d '"' | xargs)
-        if [[ -n "$CONTAINER_PACKAGES" ]]; then
-            log_info "Installing container packages..."
-            sudo pacman -S --needed --noconfirm $CONTAINER_PACKAGES || log_warn "Some container packages failed to install"
-
-            # Configure podman for rootless operation
-            if command -v podman &> /dev/null; then
-                log_info "Configuring podman for rootless operation..."
-                sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER
-                podman system migrate
-            fi
+    # Install packages for each category
+    for category in "${PACKAGE_CATEGORIES[@]}"; do
+        VAR_NAME="${category%%:*}"
+        DISPLAY_NAME="${category#*:}"
+        
+        # Get the value of the variable
+        PACKAGES="${!VAR_NAME}"
+        
+        # Skip if variable is empty or not set
+        if [[ -n "$PACKAGES" ]]; then
+            log_info "Installing $DISPLAY_NAME..."
+            sudo pacman -S --needed --noconfirm $PACKAGES || log_warn "Some $DISPLAY_NAME packages failed to install"
         fi
+    done
+
+    # Special handling: Configure podman for rootless operation if installed
+    if command -v podman &> /dev/null; then
+        log_info "Configuring podman for rootless operation..."
+        sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER 2>/dev/null || true
+        podman system migrate 2>/dev/null || true
     fi
 fi
 

@@ -17,7 +17,7 @@
 # ============================================
 # TEXT EDITORS & IDEs
 # ============================================
-neovim
+# NOTE: neovim, vim, nano are in packages.conf (EDITOR_PACKAGES)
 # AUR: visual-studio-code-bin
 # AUR: sublime-text-4
 # emacs
@@ -46,14 +46,13 @@ ghostty
 # ============================================
 # VERSION CONTROL
 # ============================================
-# git-lfs
 lazygit
 # tig
 
 # ============================================
 # FILE MANAGERS
 # ============================================
-ranger
+# NOTE: ranger, nnn, mc are in packages.conf (FILEMANAGER_PACKAGES)
 # thunar
 # nemo
 # dolphin
@@ -62,7 +61,7 @@ ranger
 # ============================================
 # WEB BROWSERS
 # ============================================
-firefox
+# NOTE: firefox is in packages.conf (OPTIONAL_PACKAGES)
 # chromium
 # AUR: brave-bin
 # AUR: google-chrome
@@ -81,7 +80,7 @@ firefox
 # MULTIMEDIA
 # ============================================
 vlc
-# mpv
+# NOTE: mpv is in packages.conf (OPTIONAL_PACKAGES)
 # spotify-launcher
 # AUR: spotify
 # gimp
