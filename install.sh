@@ -106,15 +106,59 @@ else
     fi
 fi
 
-# Set defaults
+# Set defaults (safe defaults only - critical values must be explicitly set)
 HOSTNAME="${HOSTNAME:-archlinux}"
 USERNAME="${USERNAME:-user}"
 TIMEZONE="${TIMEZONE:-UTC}"
 LOCALE="${LOCALE:-en_US.UTF-8}"
 KEYMAP="${KEYMAP:-us}"
-TARGET_DISK="${TARGET_DISK:-sda}"
 FILESYSTEM="${FILESYSTEM:-btrfs}"
 KERNEL="${KERNEL:-stable}"
+
+# Critical validation - TARGET_DISK must be explicitly set
+if [[ -z "${TARGET_DISK}" ]]; then
+    error_exit "TARGET_DISK is not set! This is required to prevent accidental data loss."
+fi
+
+# Validate that the target disk exists
+if [[ ! -b "/dev/${TARGET_DISK}" ]]; then
+    log_error "Disk /dev/${TARGET_DISK} does not exist!"
+    log_info "Available disks:"
+    lsblk -d -n -o NAME,SIZE,TYPE,MODEL | grep disk
+    error_exit "Please specify a valid disk in your configuration."
+fi
+
+# Display detailed disk information
+log_step "Target disk information:"
+echo ""
+echo "=========================================="
+lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,MODEL "/dev/${TARGET_DISK}"
+echo "=========================================="
+echo ""
+
+# Show existing partitions and warn if disk is in use
+if lsblk -n -o MOUNTPOINT "/dev/${TARGET_DISK}" | grep -q .; then
+    log_error "WARNING: Disk /dev/${TARGET_DISK} has mounted partitions!"
+    lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT "/dev/${TARGET_DISK}"
+    log_error "This disk appears to be in use!"
+fi
+
+# Always require explicit confirmation, even in config file mode
+log_warn "╔════════════════════════════════════════════════════════╗"
+log_warn "║  WARNING: ALL DATA ON /dev/${TARGET_DISK} WILL BE ERASED!  ║"
+log_warn "╚════════════════════════════════════════════════════════╝"
+echo ""
+read -p "Type the disk name '${TARGET_DISK}' to confirm: " DISK_CONFIRM
+if [[ "$DISK_CONFIRM" != "${TARGET_DISK}" ]]; then
+    error_exit "Disk confirmation failed. Installation cancelled for safety."
+fi
+
+read -p "Type 'YES' in capital letters to proceed with installation: " FINAL_CONFIRM
+if [[ "$FINAL_CONFIRM" != "YES" ]]; then
+    error_exit "Final confirmation failed. Installation cancelled."
+fi
+
+log_info "Disk confirmation successful. Proceeding with installation..."
 
 # Verify internet connection
 log_step "Checking internet connectivity..."

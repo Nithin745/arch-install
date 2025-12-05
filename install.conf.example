@@ -43,8 +43,10 @@ KEYMAP="us"
 # ============================================
 
 # Target disk for installation (e.g., sda, nvme0n1, vda)
+# *** REQUIRED FIELD - NO DEFAULT VALUE ***
 # WARNING: This disk will be completely erased!
-# Use 'lsblk' to list available disks
+# Use 'lsblk -d -n -o NAME,SIZE,TYPE,MODEL | grep disk' to list available disks
+# IMPORTANT: The script will require explicit confirmation before proceeding
 TARGET_DISK="sda"
 
 # Filesystem type
@@ -91,5 +93,14 @@ KERNEL="stable"
 #    - Use only the disk name without partition numbers
 #
 # 6. To confirm your disk before installation:
-#    Run: lsblk -d -n -o NAME,SIZE,TYPE | grep disk
+#    Run: lsblk -d -n -o NAME,SIZE,TYPE,MODEL | grep disk
+#
+# 7. SAFETY FEATURES:
+#    - TARGET_DISK has no default value and must be explicitly set
+#    - The script validates that the disk exists before proceeding
+#    - Shows detailed disk information and mounted partitions
+#    - Requires TWO confirmations even in config file mode:
+#      1. Type the disk name to confirm target
+#      2. Type 'YES' to proceed with installation
+#    This prevents accidental data loss from misconfiguration
 #
