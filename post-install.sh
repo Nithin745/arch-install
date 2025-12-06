@@ -195,7 +195,10 @@ if systemctl list-unit-files | grep -q libvirtd.service; then
 fi
 
 # Enable firewall
-if command -v ufw &> /dev/null; then
+if command -v firewall-cmd &> /dev/null; then
+    sudo systemctl enable --now firewalld.service
+    log_info "firewalld enabled and started"
+elif command -v ufw &> /dev/null; then
     sudo ufw enable
     sudo systemctl enable ufw.service
     log_info "UFW firewall enabled"
